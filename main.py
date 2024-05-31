@@ -183,6 +183,7 @@ if __name__ == '__main__':
 
         # 면책조항 관련되서 리턴 받았을 경우
         for res in response_list:
+            st.markdown(res)
             print('res: ', res)
 
         
