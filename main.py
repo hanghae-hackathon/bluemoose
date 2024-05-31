@@ -29,10 +29,15 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.callbacks import StreamlitCallbackHandler
 from poc_1 import extract_insurance_clauses
+from voting import Voting, VECTOR_DIR
+import pandas as pd
 
 # openai settings 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 openai.api_key = os.environ["OPENAI_API_KEY"]
+
+# initialize Voting instance
+voting = Voting(VECTOR_DIR)
 
 class DocumentLoader(object):
     """
@@ -171,11 +176,33 @@ if __name__ == '__main__':
 
     # user query 가 존재할 경우
     if user_query:
-        stream_handler = StreamlitCallbackHandler(assistant)
 
+        stream_handler = StreamlitCallbackHandler(assistant)
         response_list = []
+
+
+
         if ("조심" in user_query or "분리" in user_query):
             response_list.append(extract_insurance_clauses(uploaded_files))
+
+            verification_list = []
+            for response in response_list:
+                verification_list.append(voting.voting(response))
+
+            # Initialize data for the DataFrame
+            data = {
+                "면책조항": response_list,  # Sample data for column "면책조항"
+                "검증": verification_list      # Sample data for column "검증"
+            }
+
+            # Create DataFrame
+            df = pd.DataFrame(data)
+
+            # Display DataFrame
+            print(df)
+            st.table(df)
+
+
         else: 
             response = qa_chain.run(user_query, callbacks=[stream_handler])
             print(response)
@@ -183,8 +210,9 @@ if __name__ == '__main__':
 
         # 면책조항 관련되서 리턴 받았을 경우
         for res in response_list:
-            st.markdown(res)
             print('res: ', res)
+
+    print('============================FINISHED============================')
 
         
 
