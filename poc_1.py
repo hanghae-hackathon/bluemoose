@@ -38,7 +38,7 @@ def extract_insurance_clauses(uploaded_files):
 
             text = pdf_reader.pages[page].extract_text()
             prompt = f"""{text}\n
-                위 텍스트는 보험 계약의 약관입니다. 다음 텍스트에서 보험 계약의 면책조항을 찾아주세요."""
+                위 텍스트는 보험 계약의 약관입니다. 텍스트에서 보험 계약의 면책조항을 찾아주세요."""
             
             response = client.chat.completions.create(
                 messages=[
@@ -53,7 +53,7 @@ def extract_insurance_clauses(uploaded_files):
 
             content = response.choices[0].message.content
 
-            if content is None or content[0] == 'N':
+            if content is None:
                 continue
 
             total_contents += f"Page : {page+1} - " + content
@@ -71,14 +71,15 @@ def parse_insurance_clauses(total_contents):
         messages=[
             {
                 "role": "user",
-                "content": total_contents
+                "content": f"""{total_contents}\n\n
+                            조항별로 내용을 한줄로 묶어서 페이지, 조항 번호 - 조항 내용으로 파싱해주세요."""
             },
             {
                 "role": "assistant", 
-                "content": "[Page Number] 페이지 - [조항]\n"
+                "content": "[페이지 번호] 페이지, [조항 번호] - [조항내용]\n"
             },
         ],
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         temperature=0.2
     )
 
