@@ -79,7 +79,7 @@ def configure_retriever(docs: list[Document]) -> BaseRetriever:
     
     splitted_docs = text_splitter.split_documents(docs)
     embeddings = OpenAIEmbeddings()
-    vector_store = FAISS.from_documents(docs, embeddings)
+    vector_store = FAISS.from_documents(splitted_docs, embeddings)
     
     retriever = vector_store.as_retriever(
         search_type="mmr", 
