@@ -28,6 +28,7 @@ from langchain.chains.base import Chain
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.callbacks import StreamlitCallbackHandler
+from poc_1 import extract_insurance_clauses
 
 # openai settings 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
@@ -172,15 +173,19 @@ if __name__ == '__main__':
     if user_query:
         stream_handler = StreamlitCallbackHandler(assistant)
 
-        response = ''
+        response_list = []
         if ("조심" in user_query or "분리" in user_query):
-            st.markdown("독소조항과 관련된 정보는 현재 준비중입니다.")
-        else:
+            response_list.append(extract_insurance_clauses(uploaded_files))
+        else: 
             response = qa_chain.run(user_query, callbacks=[stream_handler])
+            print(response)
+            st.markdown(response)
 
-        st.markdown(response)
+        # 면책조항 관련되서 리턴 받았을 경우
+        for res in response_list:
+            print('res: ', res)
 
+        
 
-    
 
 
