@@ -31,6 +31,8 @@ from langchain.callbacks import StreamlitCallbackHandler
 from poc_1 import extract_insurance_clauses
 from voting import Voting, VECTOR_DIR
 import pandas as pd
+from streamlit_extras.app_logo import add_logo
+
 
 # openai settings 
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
@@ -158,7 +160,7 @@ if __name__ == '__main__':
 
     # UI 초기화
     #st.set_page_config(page_title="Bluemoose:Chat with Documents", page_icon="B")
-    st.title('Bluemoose Application')
+    st.title('항해99')
     
     uploaded_files = st.sidebar.file_uploader(
         label="파일 업로드",
@@ -181,26 +183,38 @@ if __name__ == '__main__':
         response_list = []
 
 
-
-        if ("조심" in user_query or "분리" in user_query):
+        if ("조심" in user_query or "주의" in user_query or "불리" in user_query):
             response_list.append(extract_insurance_clauses(uploaded_files))
 
-            verification_list = []
+            joined_response_list = []
             for response in response_list:
-                verification_list.append(voting.voting(response))
+                joined_response_list.append(' '.join(response))
+
+            verification_list = []
+            for joined_response in joined_response_list:
+                verification_list.append(voting.voting(joined_response))
 
             # Initialize data for the DataFrame
             data = {
-                "면책조항": response_list,  # Sample data for column "면책조항"
-                "검증": verification_list      # Sample data for column "검증"
+                "면책조항": joined_response_list,  # Sample data for column "면책조항"
+                "판단": verification_list      # Sample data for column "검증"
             }
 
             # Create DataFrame
             df = pd.DataFrame(data)
-
-            # Display DataFrame
-            print(df)
             st.table(df)
+
+            # Inject CSS to adjust the width of the second column
+            st.markdown(
+                """
+                <style>
+                table th:nth-child(3) {
+                    width: 50px;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
 
 
         else: 
