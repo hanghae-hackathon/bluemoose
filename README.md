@@ -2,6 +2,7 @@
 
 금융 분야에서 소비자를 보호하기 위해 AI를 활용하는, 4명으로 구성된 열정적인 팀.
 
+![image](https://github.com/hanghae-hackathon/bluemoose/assets/3814234/308f58af-a297-40ae-ba8e-612c868eebaa)
 
 
 
