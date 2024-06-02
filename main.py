@@ -182,8 +182,17 @@ if __name__ == '__main__':
         stream_handler = StreamlitCallbackHandler(assistant)
         response_list = []
 
-
-        if ("조심" in user_query or "주의" in user_query or "불리" in user_query):
+        response = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": user_query
+                }
+            ],
+            model="gpt-4-turbo",
+        )
+        
+        if response.choices[0].message.content == 'A':
             response_list.append(extract_insurance_clauses(uploaded_files))
 
             joined_response_list = []
@@ -215,8 +224,6 @@ if __name__ == '__main__':
                 """,
                 unsafe_allow_html=True
             )
-
-
         else: 
             response = qa_chain.run(user_query, callbacks=[stream_handler])
             print(response)
