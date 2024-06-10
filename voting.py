@@ -57,7 +57,7 @@ class BuildVector:
             tree = ET.parse(file_path)
             root = tree.getroot()
             return root.find('.//cn').text.strip()
-        except Exception:
+        except Exception: 
             return None
 
     def embedding(self, data_folder: str, meta_class: str) -> None:
